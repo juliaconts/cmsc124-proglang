@@ -22,14 +22,17 @@ logical operators: "and" - logical AND, "or" - logical OR
 
 Operators
 [List all operators organized by category (arithmetic, comparison, logical, assignment, etc.)]
-arithmetic: + for addition, - for subtraction, * for multiplication, / for division
+assignment: "="
 
-comparison: == for equality, != for not equal, < for less than, <= for less than or equal to, > for greater than, >= for greater than or equal to
-!! comparison is not allowed for different types
+arithmetic: "+" for addition, "-" for subtraction, "*" for multiplication, "/" for division
 
-logical: ! for not, "and" for and, "or" for or
+comparison: "==" for equality, "!=" for not equal, "<" for less than, "<=" for less than or equal to, 
+">" for greater than, ">=" for greater than or equal to
+comparison is not allowed for different types
 
-assignment: =
+logical: "!" for not, "and" for and, "or" for or
+
+grouping: (), {}, ","(comma), "."(dot), ";"(semicolon)
 
 Literals
 [Describe the format and syntax for each type of literal value (e.g., numbers, strings, characters, etc.) your language supports]
@@ -48,13 +51,15 @@ foo = 0, bar = 0.0
 Identifiers
 [Define the rules for valid identifiers (variable names, function names, etc.) and whether they are case-sensitive]
 identifiers cannot begin with a number
+
 identifiers are case-sensitive, ex. fooBar != foobar
 
+identifiers only accept letters, digits (if they are not the first character), and underlines(_)
 
 Comments
 [Describe the syntax for comments and whether nested comments are supported]
-single-line comments will be signified by // at the start and will end once the line ends
-group comments will be signified by /* at the start and will end at */
+single-line comments will be signified by # at the start and will end once the line ends
+group comments will be signified by ## at the start and will end at ##
 nested comments will not be supported
 
 Syntax Style
