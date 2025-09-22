@@ -9,16 +9,21 @@ readability, less words need to by typed (???)
 
 Keywords
 [List all reserved words that cannot be used as identifiers - include the keyword and a brief description of its purpose]
-variables and functions: "var" defines a variable, "def" defines a function, "return" returns a value
+variables and functions: "var" defines a variable, 
+                         "def" defines a function, 
+                         "return" returns a value
 
-variable types: "int" for integers, "float" for floats, "char" for single characters, "String" for strings 
+variable types: "int" for integers, 
+                "float" for floats, 
+                "char" for single characters, 
+                "String" for strings 
 
-control flow: "if" for conditional branching, "else" for alternate branches, "while" for looping while condition is true, 
+control flow: "if" for conditional branching,
+              "else" for alternate branches,
+              "while" for looping while condition is true, 
               "for" for iterated loops
 
 logical values: "true" or "false" - boolean values, "null" - null values
-
-logical operators: "and" - logical AND, "or" - logical OR 
 
 Operators
 [List all operators organized by category (arithmetic, comparison, logical, assignment, etc.)]
@@ -26,13 +31,18 @@ assignment: "="
 
 arithmetic: "+" for addition, "-" for subtraction, "*" for multiplication, "/" for division
 
-comparison: "==" for equality, "!=" for not equal, "<" for less than, "<=" for less than or equal to, 
-">" for greater than, ">=" for greater than or equal to
-comparison is not allowed for different types
+comparison: "==" for equality, 
+            "!=" for not equal, 
+            "<" for less than, 
+            "<=" for less than or equal to, 
+            ">" for greater than, 
+            ">=" for greater than or equal to
 
-logical: "!" for not, "and" for and, "or" for or
+comparison is not allowed for different types (e.g. int cannot be compared to a char)
 
-grouping: (), {}, ","(comma), "."(dot), ";"(semicolon)
+logical: "!" - logical NOT, "and" - logical AND, "or" - logical OR
+
+grouping: () - function calls and read operator precedence, {} - function body, ","(comma), "."(dot), ";"(semicolon)
 
 Literals
 [Describe the format and syntax for each type of literal value (e.g., numbers, strings, characters, etc.) your language supports]
@@ -54,7 +64,7 @@ identifiers cannot begin with a number
 
 identifiers are case-sensitive, ex. fooBar != foobar
 
-identifiers only accept letters, digits (if they are not the first character), and underlines(_)
+identifiers only accept letters, digits (if they are not the first character), and underscore(_)
 
 Comments
 [Describe the syntax for comments and whether nested comments are supported]
@@ -64,6 +74,7 @@ nested comments will not be supported
 
 Syntax Style
 [Describe whether whitespace is significant, how statements are terminated, and what delimiters are used for blocks and grouping]
+
 
 Sample Code
 [Provide a few examples of valid code in your language to demonstrate the syntax and features]
