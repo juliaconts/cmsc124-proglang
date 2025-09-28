@@ -53,7 +53,7 @@ class Scanner(private val source: String) {
             start = current // *makes sure that line variable is correct and outputs properly
             scanTokens()
         }
-        readTokens.add(Token(TokenType.EOF, " ", null, line))
+        readTokens.add(Token(TokenType.EOF, "", null, line))
         return readTokens
     }
 
@@ -81,18 +81,26 @@ class Scanner(private val source: String) {
             '>' -> addToken(if (match('=')) TokenType.GREATER_EQUAL else TokenType.GREATER)
 
             // comments
-            '#' -> addToken(TokenType.POUND) { // single-line comments
-                while (peekNext() != '\n' && !endOfLine()) next()
-                if (match('#')) { // *! multiple line comments
-                }
+            '#' ->  { // *! multiple line comments
+                while (peek() != '\n' && !endOfLine()) next()
             }
 
+            //whitespace
+            ' ', '\r', '\t' -> {}   //ignore spaces
+            '\n' -> line++          //count lines
 
+            '"' -> string()         //string literals
+
+            else -> when {
+                curr.isDigit() -> number()
+                curr.isLetter() || curr == '_' -> identifier()
+                else -> println("Unexpected character '$curr' at line $line")
+            }
         }
     }
 
     private fun identifier() {
-        while (peek().isLetterOrDigit() || peekNext() == '_') next()
+        while (peek().isLetterOrDigit() || peek() == '_') next()
         val text = source.substring(start, current)
         val type = keywords[text] ?: TokenType.IDENTIFIER
         addToken(type)
@@ -101,7 +109,7 @@ class Scanner(private val source: String) {
     private fun number() {
         while (peek().isDigit()) next()
 
-        if (peek() == '.' && peek().isDigit()) {    // if number is a decimal
+        if (peek() == '.' && peekNext().isDigit()) {    // if number is a decimal
             next()
             while(peek().isDigit()) next()
         }
@@ -135,12 +143,24 @@ class Scanner(private val source: String) {
         current++
         return true
     }
-    private fun peek(): Char = if (readlnOrNull() == null) '\u0000' else source[current] // *peeks at current character
+    private fun peek(): Char = if (endOfLine()) '\u0000' else source[current] // *peeks at current character
     private fun peekNext(): Char = if (current + 1 >= source.length) '\u0000' else source[current + 1] // *peeks at next character
-    private fun endOfLine(): Boolean {
-        if (readlnOrNull() == null) return true
-        else return false
+    private fun endOfLine(): Boolean = current >= source.length
 
+}
+
+fun main() {
+    while (true) {
+        print("> ")
+        val line = readlnOrNull() ?: break
+        if (line.trim() == "exit") break
+
+        val scanner = Scanner(line)
+        val tokens = scanner.scanInput()
+
+        for (token in tokens) {
+            println("Token(type=${token.type}, lexeme=${token.lexeme}, literal=${token.literal}, line=${token.line})")
+        }
     }
 }
 
