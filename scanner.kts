@@ -4,7 +4,7 @@
 
 enum class TokenType {
     // grouping tokens
-    LEFT_PAR, RIGHT_PAR, LEFT_BRACE, RIGHT_BRACE, COMMA, DOT, SEMICOLON, POUND,
+    LEFT_PAR, RIGHT_PAR, LEFT_BRACE, RIGHT_BRACE, COMMA, DOT, SEMICOLON,
 
     // assignment and comparison tokens
     EQUALS, NOT, EQUAL_EQUAL, NOT_EQUAL, LESSER, LESSER_EQUAL, GREATER, GREATER_EQUAL,
@@ -40,7 +40,7 @@ class Scanner(private val source: String) {
         "def" to TokenType.DEF,
         "return" to TokenType.RETURN,
         "int" to TokenType.INT,
-        "float" to TokenType.FLOAT,
+        "flt" to TokenType.FLOAT,
         "char" to TokenType.CHAR,
         "if" to TokenType.IF,
         "else" to TokenType.ELSE,
@@ -81,7 +81,7 @@ class Scanner(private val source: String) {
             '>' -> addToken(if (match('=')) TokenType.GREATER_EQUAL else TokenType.GREATER)
 
             // comments
-            '#' ->  { // *! multiple line comments
+            '#' ->   { // *! multiple line comments
                 while (peek() != '\n' && !endOfLine()) next()
             }
 
@@ -102,19 +102,16 @@ class Scanner(private val source: String) {
     private fun identifier() {
         while (peek().isLetterOrDigit() || peek() == '_') next()
         val text = source.substring(start, current)
-        val type = keywords[text] ?: TokenType.IDENTIFIER
-        addToken(type)
-    }
 
-    private fun number() {
-        while (peek().isDigit()) next()
+        when (text) {
+            "TRUE", "FALSE" -> addToken(TokenType.BOOL, text.toBoolean())
+            "if" -> addToken(TokenType.FOR, literal = text)
+            "else" -> addToken(TokenType.ELSE, literal = text)
+            "while" -> addToken(TokenType.WHILE, literal = text)
+            "for" -> addToken(TokenType.FOR, literal = text)
 
-        if (peek() == '.' && peekNext().isDigit()) {    // if number is a decimal
-            next()
-            while(peek().isDigit()) next()
+            else ->  addToken(TokenType.IDENTIFIER)
         }
-        val value = source.substring(start, current).toDouble()
-        addToken(TokenType.NUMBER, value)
     }
 
     private fun string() {
@@ -129,6 +126,17 @@ class Scanner(private val source: String) {
         next()
         val value = source.substring(start +1, current -1)
         addToken(TokenType.STRING, value)
+    }
+
+    private fun number() {
+        while (peek().isDigit()) next()
+
+        if (peek() == '.' && peekNext().isDigit()) {    // if number is a decimal
+            next()
+            while (peek().isDigit()) next()
+        }
+        val value = source.substring(start, current).toDouble()
+        addToken(TokenType.NUMBER, value)
     }
 
     // helpers
@@ -159,7 +167,7 @@ fun main() {
         val tokens = scanner.scanInput()
 
         for (token in tokens) {
-            println("Token(type=${token.type}, lexeme=${token.lexeme}, literal=${token.literal}, line=${token.line})")
+            println("Token(type = ${token.type}, lexeme = ${token.lexeme}, literal = ${token.literal}, line = ${token.line})")
         }
     }
 }
