@@ -14,7 +14,7 @@ variables and functions: "var" defines a variable,
                          "return" returns a value
 
 variable types: "int" for integers,
-                "float" for floats,
+                "flt" for floats,
                 "char" for single characters,
                 "String" for strings
 
@@ -23,7 +23,7 @@ control flow: "if" for conditional branching,
               "while" for looping while condition is true,
               "for" for iterated loops
 
-logical values: "true" or "false" - boolean values, "null" - null values
+logical values: "TRUE" or "FALSE" - boolean values, "null" - null values
 
 Operators
 [List all operators organized by category (arithmetic, comparison, logical, assignment, etc.)]
@@ -40,14 +40,14 @@ comparison: "==" for equality,
 
 comparison is not allowed for different types (e.g. int cannot be compared to a char)
 
-logical: "!" - logical NOT, "and" - logical AND, "or" - logical OR
+logical: "!" - logical NOT, "AND" - logical AND, "OR" - logical OR
 
 grouping: () - function calls and read operator precedence, {} - function body, ","(comma), "."(dot), ";"(semicolon)
 
 Literals
 [Describe the format and syntax for each type of literal value (e.g., numbers, strings, characters, etc.) your language supports]
 numerical and character literals will be defined by the "var" keyword, followed by their variable type, then variable name, then the assignment operator "=", ex.
-var int foo = 10, var float bar = 12.34, var char coo = c
+var int foo = 10, var float bar = 12.34, var char coo = "c"
 
 String literals will be defined by the "var" keyword, followed by their variable type, then variable name, then the assignment operator "=",
 then the string enclosed in quotation marks, ex.

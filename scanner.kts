@@ -12,8 +12,11 @@ enum class TokenType {
     // arithmetic tokens
     PLUS, MINUS, STAR, SLASH,
 
+    // logical operators
+    AND, OR,
+
     // literals
-    IDENTIFIER, STRING, NUMBER, BOOL,
+    IDENTIFIER, STRING, NUMBER, BOOL, NULL,
 
     // keywords
     VAR, DEF, RETURN, INT, FLOAT, CHAR, IF, ELSE, WHILE, FOR,
@@ -89,6 +92,7 @@ class Scanner(private val source: String) {
             ' ', '\r', '\t' -> {}   //ignore spaces
             '\n' -> line++          //count lines
 
+            '\'' -> charliteral()
             '"' -> string()         //string literals
 
             else -> when {
@@ -105,13 +109,41 @@ class Scanner(private val source: String) {
 
         when (text) {
             "TRUE", "FALSE" -> addToken(TokenType.BOOL, text.toBoolean())
-            "if" -> addToken(TokenType.FOR, literal = text)
+            "AND" -> addToken(TokenType.AND)
+            "OR" -> addToken(TokenType.OR)
+            "null" -> addToken(TokenType.NULL, null)
+
+            "var" -> addToken(TokenType.VAR)
+            "def" -> addToken(TokenType.DEF)
+            "return" -> addToken(TokenType.RETURN)
+
+            "int" -> addToken(TokenType.INT)
+            "flt" -> addToken(TokenType.FLOAT)
+            "char" -> addToken(TokenType.CHAR)
+
+            "if" -> addToken(TokenType.IF, literal = text)
             "else" -> addToken(TokenType.ELSE, literal = text)
             "while" -> addToken(TokenType.WHILE, literal = text)
             "for" -> addToken(TokenType.FOR, literal = text)
 
             else ->  addToken(TokenType.IDENTIFIER)
         }
+    }
+
+    private fun charliteral() {
+        if (endOfLine()){
+            println("Unterminated string at line $line")
+            return
+        }
+
+        val value = next()   // get the character inside ' '
+        if (peek() != '\'') {
+            println("Invalid char literal at line $line")
+            return
+        }
+
+        next()
+        addToken(TokenType.CHAR, value)
     }
 
     private fun string() {
