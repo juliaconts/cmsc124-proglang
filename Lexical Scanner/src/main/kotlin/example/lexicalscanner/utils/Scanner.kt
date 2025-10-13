@@ -55,7 +55,7 @@ class Scanner(val source: String) {
             else -> when {
                 curr.isDigit() -> number()
                 curr.isLetter() || curr == '_' -> identifier()
-                else -> println("Unexpected character '$curr' at line $line")
+                else -> println("Awit par, unexpected character '$curr' at line $line")
             }
         }
     }
@@ -65,24 +65,24 @@ class Scanner(val source: String) {
         val text = source.substring(start, current)
 
         when (text) {
-            "TRUE", "FALSE" -> addToken(TokenType.BOOL, text.toBoolean())
+            "FRFR", "CAP" -> addToken(TokenType.BOOL, text.toBoolean())
             "AND" -> addToken(TokenType.AND)
             "OR" -> addToken(TokenType.OR)
             "null" -> addToken(TokenType.NULL, null)
 
-            "var" -> addToken(TokenType.VAR)
+            "par" -> addToken(TokenType.VAR)
             "def" -> addToken(TokenType.DEF)
-            "return" -> addToken(TokenType.RETURN)
+            "matsaloves" -> addToken(TokenType.RETURN)
 
-            "int" -> addToken(TokenType.INT)
-            "flt" -> addToken(TokenType.FLOAT)
+            "sah" -> addToken(TokenType.INT)
+            "kosa" -> addToken(TokenType.FLOAT)
             "char" -> addToken(TokenType.CHAR)
-            "bool" -> addToken(TokenType.BOOL)
+            "dol" -> addToken(TokenType.BOOL)
 
-            "if" -> addToken(TokenType.IF, literal = text)
-            "else" -> addToken(TokenType.ELSE, literal = text)
-            "while" -> addToken(TokenType.WHILE, literal = text)
-            "for" -> addToken(TokenType.FOR, literal = text)
+            "kung" -> addToken(TokenType.IF, literal = text)
+            "kungdeins" -> addToken(TokenType.ELSE, literal = text)
+            "habang" -> addToken(TokenType.WHILE, literal = text)
+            "pag" -> addToken(TokenType.FOR, literal = text)
 
             else ->  addToken(TokenType.IDENTIFIER)
         }
@@ -90,13 +90,13 @@ class Scanner(val source: String) {
 
     fun charLiteral() {
         if (endOfLine()){
-            println("Unterminated string at line $line")
+            println("Awit ka par, unterminated string at line $line")
             return
         }
 
         val value = next()   // get the character inside ' '
         if (peek() != '\'') {
-            println("Invalid char literal at line $line")
+            println("Awit lods, invalid char literal at line $line")
             return
         }
 
@@ -110,7 +110,7 @@ class Scanner(val source: String) {
             next()
         }
         if (endOfLine()) {
-            println("Unterminated string at line $line")
+            println("Awit ka sah, unterminated string at line $line")
             return
         }
         next()
@@ -144,7 +144,6 @@ class Scanner(val source: String) {
     fun peekNext(): Char = if (current + 1 >= source.length) '\u0000' else source[current + 1] // *peeks at next character
     fun endOfLine(): Boolean = current >= source.length
 }
-
 
 
 

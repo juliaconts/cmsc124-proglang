@@ -1,10 +1,10 @@
-Fleet
+STUNNA
 
 Creators Julo Bretaña and Julia Louise Contreras
 
 Language Overview 
 [Provide a brief description of your programming language - what it's designed for, its main characteristics] 
-Fleet is a general-purpose language that aims to be readable and simple. Its syntax style makes for quicker coding and is beginner-friendly.
+Para 'to sa mga day zeroes ko't ropa, sah!
 
 Keywords [List all reserved words that cannot be used as identifiers - include the keyword and a brief description of its purpose] 
 variables and functions: "var" defines a variable, "def" defines a function, "return" returns a value
