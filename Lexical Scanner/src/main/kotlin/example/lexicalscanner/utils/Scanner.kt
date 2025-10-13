@@ -19,8 +19,7 @@ class Scanner(val source: String) {
 
     // *main loop to determine if scanned text is a token
     fun scanTokens() {
-        val curr = next() // *iterates through text, see function definition below
-        when (curr) {
+        when (val curr = next()) { // *iterates through text, see function definition below
             // single-character tokens
             '(' -> addToken(TokenType.LEFT_PAR)
             ')' -> addToken(TokenType.RIGHT_PAR)
@@ -62,9 +61,7 @@ class Scanner(val source: String) {
 
     fun identifier() {
         while (peek().isLetterOrDigit() || peek() == '_') next()
-        val text = source.substring(start, current)
-
-        when (text) {
+        when (val text = source.substring(start, current)) {
             "FRFR", "CAP" -> addToken(TokenType.BOOL, text.toBoolean())
             "AND" -> addToken(TokenType.AND)
             "OR" -> addToken(TokenType.OR)
