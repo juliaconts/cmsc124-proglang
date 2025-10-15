@@ -5,149 +5,206 @@ import example.lexicalscanner.utils.*
 class Parser(val tokens: List<Token>) {
     var current = 0
 
-    fun parse() {
-        while(!endOfLine()) {
-            declaration()
+    fun parseStmt(): List<Stmt> {
+        val statements = mutableListOf<Stmt>()
+        while(!endOfLine()){
+            statements.add(declaration())
+        }
+        return statements
+    }
+
+    fun parseExpr(): Expr? {
+        return try {
+                expression()
+        } catch (error: ParseError) {
+            null
         }
     }
 
-    fun declaration() {
-        when {
-            match(TokenType.VAR) -> varDeclaration()
-            match(TokenType.DEF) -> funcDeclaration()
-            else -> statement()
+    private fun declaration(): Stmt {
+        return try {
+            when {
+                match(TokenType.VAR) -> varDeclaration()
+                match(TokenType.DEF) -> funcDeclaration()
+                else -> statement()
+            }
+        } catch (e: ParseError) {
+            synchronize()
+            Stmt.ExpressionStmt(Expr.Literal(" "))
         }
     }
 
-    fun varDeclaration() {
-        consume(TokenType.IDENTIFIER, "Variable name dapat 'yan pagkatapos ng 'par', par.")
-
+    fun varDeclaration(): Stmt {
+        val name = consume(TokenType.IDENTIFIER, "Variable name dapat 'yan pagkatapos ng 'par', par.")
+        var initializer: Expr? = null
         if (match(TokenType.EQUALS)) {
-            expression()
+            initializer = expression()
         }
-
         consume(TokenType.SEMICOLON, "May ';' dapat pagkatapos ng variable declaration, rops.")
+        return Stmt.VariableDecl(name,initializer)
     }
 
-    fun funcDeclaration() {
-        consume(TokenType.IDENTIFIER, "Function name dapat 'yan pagkatapos ng 'def', sah.")
+    fun funcDeclaration(): Stmt.FunctionStmt {
+        val name = consume(TokenType.IDENTIFIER, "Function name dapat 'yan pagkatapos ng 'def', sah.")
         consume(TokenType.LEFT_PAR, "May '(' dapat 'yan pagkatapos ng pangalan ng function, pre.")
+
+        val parameters = mutableListOf<Token>()
         if (!check(TokenType.RIGHT_PAR)) {
             do {
-                consume(TokenType.IDENTIFIER, "'San parameter name mo, boss?")
+                if (parameters.size >= 255) {
+                    error(peek(), "Sumobra kana boss.")
+                }
+                parameters.add(consume(TokenType.IDENTIFIER, "'San parameter name mo, boss?"))
             } while (match(TokenType.COMMA))
         }
         consume(TokenType.RIGHT_PAR, "May ')' dapat 'yan pagkatapos ng pangalan ng function, pre.")
-        block()
+        val body = block()
+        return Stmt.FunctionStmt(name, parameters, body)
     }
 
-    fun statement() {
-        when {
+    fun statement(): Stmt {
+        return when {
             match(TokenType.IF) -> ifStatement()
             match(TokenType.WHILE) -> whileStatement()
             match(TokenType.FOR) -> forStatement()
             match(TokenType.RETURN) -> returnStatement()
-            match(TokenType.LEFT_BRACE) -> block()
+            match(TokenType.LEFT_BRACE) -> Stmt.Block(block())
             else -> expressionStatement()
         }
     }
 
-    fun ifStatement() {
+    fun ifStatement(): Stmt {
         consume(TokenType.LEFT_PAR, "May '(' dapat 'yan pagkatapos ng 'kung', ssob.")
-        expression()
+        val condition = expression()
         consume(TokenType.RIGHT_PAR, "May ')' dapat 'yan pagkatapos ng condition, ssob.")
-        statement()
-        if (match(TokenType.ELSE)) {
-            statement()
-        }
+        val thenBranch = statement()
+        val elseBranch =
+            if (match(TokenType.ELSE)) {
+                statement()
+            } else {
+                null
+            }
+        return Stmt.IfStmt(condition, thenBranch, elseBranch)
     }
 
-    fun whileStatement() {
+    fun whileStatement(): Stmt {
         consume(TokenType.LEFT_PAR, "May '(' dapat 'yan pagkatapos ng 'habang', ssob.")
-        expression()
+        val condition = expression()
         consume(TokenType.RIGHT_PAR, "May ')' dapat 'yan pagkatapos ng condition, ssob.")
-        statement()
+        val body = statement()
+        return Stmt.WhileStmt(condition, body)
     }
 
-    fun forStatement() {
+    fun forStatement(): Stmt {
         consume(TokenType.LEFT_PAR, "May '(' dapat 'yan pagkatapos ng 'pag', ssob.")
 
-        if (!match(TokenType.SEMICOLON)) {
-            if (match(TokenType.VAR)) varDeclaration()
-            else expressionStatement()
-        }
-
-        if (!check(TokenType.RIGHT_PAR)) expression()
+        val variable = consume(TokenType.IDENTIFIER, "Kailangan ng pangalan yan, pre")
+        consume(TokenType.IN, "May 'sa' pa yan, pre")
+        val iterable = expression()
         consume(TokenType.RIGHT_PAR, "May ')' dapat 'yan pagkatapos ng mga expression, ssob.")
-        statement()
+        val body = statement()
+        return Stmt.ForStmt(variable, iterable, body)
     }
 
-    fun returnStatement() {
-        if(!check(TokenType.SEMICOLON)) expression()
+    fun returnStatement(): Stmt {
+        val keyword = previous()
+        val value = if (!check(TokenType.SEMICOLON)) {
+            expression()
+        } else {
+            null
+        }
         consume(TokenType.SEMICOLON, "May ';' dapat pagakatapos ng 'matsaloves', pre.")
+        return Stmt.ReturnStmt(keyword, value)
     }
 
-    fun expressionStatement() {
-        expression()
+    fun expressionStatement(): Stmt {
+        val expr = expression()
         consume(TokenType.SEMICOLON, "May ';' dapat pagkatapos niyan, lods.")
+        return Stmt.ExpressionStmt(expr)
     }
 
-    fun block() {
+    fun block(): List<Stmt> {
+        val statements = mutableListOf<Stmt>()
         while (!check(TokenType.RIGHT_BRACE) && !endOfLine()) {
-            declaration()
+            statements.add(declaration())
         }
         consume(TokenType.RIGHT_BRACE, "May '}' dapat pagkatapos niyan, pre.")
+        return statements
     }
 
-    fun expression() {
-        equality()
+    fun expression(): Expr {
+        return equality()
     }
 
-    fun equality() {
-        comparison()
+    fun equality(): Expr {
+        var expr = comparison()
+
         while (match(TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL)) {
-            comparison()
+            val operator = previous()
+            val right = comparison()
+            expr = Expr.Binary(expr,operator, right)
         }
+        return expr
     }
 
-    fun comparison() {
-        term()
+    fun comparison(): Expr {
+        var expr = term()
         while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESSER, TokenType.LESSER_EQUAL)) {
-            term()
+            val operator = previous()
+            val right = term()
+            expr = Expr.Binary(expr, operator, right)
         }
+        return expr
     }
 
-    fun term() {
-        factor()
+    fun term(): Expr {
+        var expr = factor()
         while (match(TokenType.PLUS, TokenType.MINUS)) {
-            factor()
+            val operator = previous()
+            val right = factor()
+            expr = Expr.Binary(expr, operator, right)
         }
+        return expr
     }
 
-    fun factor() {
-        unary()
+    fun factor(): Expr {
+        var expr = unary()
         while (match(TokenType.STAR, TokenType.SLASH)){
-            unary()
+            val operator = previous()
+            val right = unary()
+            expr = Expr.Binary(expr, operator, right)
         }
+        return expr
     }
 
-    fun unary() {
-        if (match(TokenType.NOT, TokenType.MINUS)) unary()
-        else primary()
+    fun unary(): Expr {
+        if (match(TokenType.NOT, TokenType.MINUS)) {
+            val operator = previous()
+            val right = unary()
+            return Expr.Unary(operator, right)
+        }
+        return primary()
     }
 
-    fun primary() {
-        if (match(TokenType.NUMBER, TokenType.STRING, TokenType.CHAR, TokenType.BOOL, TokenType.NULL, TokenType.IDENTIFIER)) return
-        if (match(TokenType.LEFT_PAR)) {
-            expression()
-            consume(TokenType.RIGHT_PAR, "May ')' dapat pagkatapos ng expression, trops.")
-            return
-        }
+    fun primary(): Expr {
+        when {
+            match(TokenType.NUMBER, TokenType.STRING, TokenType.CHAR, TokenType.BOOL, TokenType.NULL) ->
+                return Expr.Literal(previous().literal ?: previous().lexeme)
 
+            match(TokenType.IDENTIFIER) ->
+                return Expr.Variable(previous())
+
+            match(TokenType.LEFT_PAR) -> {
+                val expr = expression()
+                if (!match(TokenType.RIGHT_PAR)){
+                    error(peek(), "May ')' dapat pagkatapos ng expression, trops.")
+                }
+                return Expr.Grouping(expr)
+             }
+        }
         error(peek(), "May expression dapat 'jan, lods.")
+        return Expr.Literal(" ")
     }
 
     class ParseError : RuntimeException()
 }
-
-

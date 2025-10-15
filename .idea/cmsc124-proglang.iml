@@ -8,5 +8,6 @@
     <orderEntry type="jdk" jdkName="22" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="..\::Users:jbret:IdeaProjects:cmsc124-proglang:scanner.kts dependencies" level="project" />
+    <orderEntry type="library" name="jetbrains.kotlin.stdlib" level="project" />
   </component>
 </module>

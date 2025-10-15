@@ -17,7 +17,7 @@ enum class TokenType {
     IDENTIFIER, STRING, NUMBER, BOOL, NULL,
 
     // keywords
-    VAR, DEF, RETURN, INT, FLOAT, CHAR, IF, ELSE, WHILE, FOR,
+    VAR, DEF, RETURN, INT, FLOAT, CHAR, IF, ELSE, WHILE, FOR, IN,
 
     EOF
 }

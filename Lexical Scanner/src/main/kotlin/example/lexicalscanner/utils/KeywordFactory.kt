@@ -12,6 +12,11 @@ data class KeywordFactory(val keyword: String) {
         "kung" to TokenType.IF,
         "kungdeins" to TokenType.ELSE,
         "habang" to TokenType.WHILE,
-        "pag" to TokenType.FOR
+        "pag" to TokenType.FOR,
+        "sa" to TokenType.IN
     )
+
+    fun getKeywordType(word: String): TokenType? {
+        return keywords[word]
+    }
 }
