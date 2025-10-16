@@ -5,15 +5,15 @@ import example.lexicalscanner.syntax.Stmt
 
 class AstPrinter {
     fun print(expr: Expr?): String {
-        if (expr == null) return "nil"
+        if (expr == null) return "null"
 
         return when (expr) {
             is Expr.Binary -> parenthesize(expr.operator.lexeme, expr.left, expr.right)
             is Expr.Unary -> parenthesize(expr.operator.lexeme, expr.right)
             is Expr.Grouping -> parenthesize("group", expr.expression)
-            is Expr.Literal -> expr.value?.toString() ?: "nil"
+            is Expr.Literal -> expr.value?.toString() ?: "null"
             is Expr.Variable -> expr.name.lexeme
-            else -> "nil"
+            else -> "null"
         }
     }
 
@@ -27,7 +27,7 @@ class AstPrinter {
             is Stmt.ForStmt -> "(for ${stmt.variable.lexeme} sa ${print(stmt.iterable)} ${(stmt.body as? Stmt.Block)?.statements?.joinToString(" ") { b -> printStmt(b) } ?: printStmt(stmt.body)})"
             is Stmt.ReturnStmt -> "(return ${print(stmt.value)})"
             is Stmt.FunctionStmt -> "(def ${stmt.name.lexeme} (${stmt.params.joinToString(" ") { it.lexeme }}) ${stmt.body.joinToString(" ") { printStmt(it) }})"
-            else -> "nil"
+            else -> "null"
         }
     }
 

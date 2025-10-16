@@ -14,7 +14,10 @@ enum class TokenType {
     AND, OR,
 
     // literals
-    IDENTIFIER, STRING, NUMBER, BOOL, NULL,
+    IDENTIFIER, STRING, NUMBER, NULL,
+
+    // bool
+    TRUE, FALSE,
 
     // keywords
     VAR, DEF, RETURN, INT, FLOAT, CHAR, IF, ELSE, WHILE, FOR, IN,

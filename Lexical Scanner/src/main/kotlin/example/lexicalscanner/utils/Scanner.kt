@@ -62,7 +62,8 @@ class Scanner(val source: String) {
     fun identifier() {
         while (peek().isLetterOrDigit() || peek() == '_') next()
         when (val text = source.substring(start, current)) {
-            "FRFR", "CAP" -> addToken(TokenType.BOOL, text.toBoolean())
+            "FRFR" -> addToken(TokenType.TRUE, true)
+            "CAP" -> addToken(TokenType.FALSE, false)
             "AND" -> addToken(TokenType.AND)
             "OR" -> addToken(TokenType.OR)
             "null" -> addToken(TokenType.NULL, null)
@@ -74,7 +75,6 @@ class Scanner(val source: String) {
             "sah" -> addToken(TokenType.INT)
             "kosa" -> addToken(TokenType.FLOAT)
             "char" -> addToken(TokenType.CHAR)
-            "dol" -> addToken(TokenType.BOOL)
 
             "kung" -> addToken(TokenType.IF, literal = text)
             "kungdeins" -> addToken(TokenType.ELSE, literal = text)
@@ -126,6 +126,3 @@ class Scanner(val source: String) {
         addToken(TokenType.NUMBER, value)
     }
 }
-
-
-

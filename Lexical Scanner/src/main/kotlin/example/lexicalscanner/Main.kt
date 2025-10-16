@@ -17,27 +17,9 @@ fun main() {
         val tokens = scanner.scanInput()
         val parser = Parser(tokens)
 
-        val keywordFactory = KeywordFactory("")
-
-        val containsKeyword = keywordFactory.keywords.keys.any { kw: String ->
-            Regex("\\b$kw\\b").containsMatchIn(line)
-        }
-
-        if (containsKeyword || line.trimEnd().endsWith(";")) {
-            val stmts = parser.parseStmt()
-            for (stmt in stmts) {
-                println(printer.printStmt(stmt))
-            }
-        } else {
-            val expr = try {
-                parser.parseExpr()
-            } catch (e: Parser.ParseError) {
-                continue
-            }
-
-            if (expr != null) {
-                println(printer.print(expr))
-            }
+        val program = parser.parse()
+        for (stmt in program) {
+            println(printer.printStmt(stmt))
         }
     }
 }

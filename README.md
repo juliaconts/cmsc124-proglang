@@ -1,25 +1,25 @@
-Fleet
+Stunna
 
 Creators Julo Bretaña and Julia Louise Contreras
 
 Language Overview 
 [Provide a brief description of your programming language - what it's designed for, its main characteristics] 
-Fleet is a general-purpose language that aims to be readable and simple. Its syntax style makes for quicker coding and is beginner-friendly.
+Stunna is a general-purpose yet trendy language that aims to be readable and simple. Its syntax style makes for quicker coding and is beginner-friendly.
 
 Keywords [List all reserved words that cannot be used as identifiers - include the keyword and a brief description of its purpose] 
-variables and functions: "var" defines a variable, "def" defines a function, "return" returns a value
+variables and functions: "par" defines a variable, "def" defines a function, "matsaloves" returns a value
 
-variable types: "int" for integers, 
-                "flt" for floats, 
+variable types: "sah" for integers, 
+                "kosa" for floats, 
                 "char" for single characters, 
                 "String" for strings
 
-control flow: "if" for conditional branching, 
-              "else" for alternate branches, 
-              "while" for looping while condition is true, 
-              "for" for iterated loops
+control flow: "kung" for conditional branching, 
+              "kungdeins" for alternate branches, 
+              "habang" for looping while condition is true, 
+              "pag" for iterated loops
 
-logical values: "TRUE" or "FALSE" - boolean values, "null" - null values
+logical values: "FRFR" or "CAP" - boolean values, "null" - null values
 
 Operators 
 [List all operators organized by category (arithmetic, comparison, logical, assignment, etc.)] 
@@ -30,7 +30,7 @@ arithmetic: "+" for addition, "-" for subtraction, "*" for multiplication, "/" f
 
 comparison: "==" for equality, 
             "!=" for not equal, 
-            "<" for less than, 
+            "<" for less than,
             "<=" for less than or equal to, 
             ">" for greater than, 
             ">=" for greater than or equal to
@@ -73,7 +73,7 @@ The delimeters used for blocks are braces - {} while for grouping it will use pa
 
 Sample Code 
 [Provide a few examples of valid code in your language to demonstrate the syntax and features]
-    for (item in items) { 
+    pag (item sa items) { 
         item++; 
         print(item); 
     }
@@ -122,3 +122,30 @@ The design of Fleet follows a readable structure to make coding straightforward 
 8. Readability and accessibility
    - Fleet’s syntax is designed to look familiar to anyone with C, Java, or Python background, easing adoption.
    - The language avoids “clever” shortcuts, prioritizing clarity and explicitness.
+
+Grammar
+
+program        -> declaration* EOF;
+declaration    -> variableDecl | functionDecl | statement; 
+variableDecl   -> "par" type IDENTIFIER "(" parameters? ")" block;
+parameters     -> IDENTIFIER ( "," IDENTIFIER)*;
+statement      -> expressionStmt | ifStmt | whileStmt | forStmt | returnStmt | block;
+expressionStmt -> expression ";" ;
+ifStmt         -> "kung" "(" expression ")" statement [ "kungdeins" statement ];
+whileStmt      -> "habang" "(" expression ")" statement;
+forStmt        -> "pag" "(" IDENTIFIER "sa" expression ")" statement ;
+returnStmt     -> "matsaloves" expression ";" ;
+block          -> "{" declaration "}" ;
+expression     -> assignment ;
+assignment     -> IDENTIFIER "=" assignment | logic_or ;
+logic_or       -> logic_and ( "OR" logic_and )* ;
+logic_and      -> equality ( "AND" equality )*;
+equality       -> comparison (( "==" | "!=" ) comparison )*;
+comparison     -> term (( ">" | ">=" | "<" | "<=" ) term )*;
+term           -> factor (( "+" | "-" ) factor )*;
+factor         -> unary (( "*" | "/" ) unary)*;
+unary          -> ( "!" | "-" ) unary | primary;
+primary        -> Number | String | "FRFR" | "CAP" | "null" | IDENTIFIER | "(" expression ")";
+Number         -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | Digit ("." Digit)? ;
+String         -> '"' ( any character except '"' )* '"';
+IDENTIFIER     -> Letter ( Letter | Digit | "_" )* ;

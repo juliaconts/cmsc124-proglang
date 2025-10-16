@@ -5,7 +5,7 @@ data class KeywordFactory(val keyword: String) {
     val keywords =  mapOf(
         "par" to TokenType.VAR,
         "def" to TokenType.DEF,
-        "mastsaloves" to TokenType.RETURN,
+        "matsaloves" to TokenType.RETURN,
         "sah" to TokenType.INT,
         "kosa" to TokenType.FLOAT,
         "char" to TokenType.CHAR,

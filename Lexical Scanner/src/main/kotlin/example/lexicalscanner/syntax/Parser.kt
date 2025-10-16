@@ -5,23 +5,29 @@ import example.lexicalscanner.utils.*
 class Parser(val tokens: List<Token>) {
     var current = 0
 
-    fun parseStmt(): List<Stmt> {
+    fun parse(): List<Stmt> {
+        return try {
+            program()
+        } catch (error: ParseError) {
+            synchronize()
+            emptyList<Stmt>()
+        }
+    }
+
+    fun program(): List<Stmt> {
         val statements = mutableListOf<Stmt>()
-        while(!endOfLine()){
-            statements.add(declaration())
+
+        while (!endOfLine()) {
+            try {
+                statements.add(declaration())
+            } catch (error: ParseError) {
+                synchronize()
+            }
         }
         return statements
     }
 
-    fun parseExpr(): Expr? {
-        return try {
-                expression()
-        } catch (error: ParseError) {
-            null
-        }
-    }
-
-    private fun declaration(): Stmt {
+    fun declaration(): Stmt {
         return try {
             when {
                 match(TokenType.VAR) -> varDeclaration()
@@ -118,9 +124,14 @@ class Parser(val tokens: List<Token>) {
     }
 
     fun expressionStatement(): Stmt {
-        val expr = expression()
-        consume(TokenType.SEMICOLON, "May ';' dapat pagkatapos niyan, lods.")
-        return Stmt.ExpressionStmt(expr)
+        return try {
+            val expr = expression()
+            consume(TokenType.SEMICOLON, "May ';' dapat pagkatapos niyan, lods.")
+            Stmt.ExpressionStmt(expr)
+        } catch (e: ParseError) {
+            synchronize()
+            Stmt.ExpressionStmt(Expr.Literal("error"))
+        }
     }
 
     fun block(): List<Stmt> {
@@ -187,23 +198,36 @@ class Parser(val tokens: List<Token>) {
     }
 
     fun primary(): Expr {
-        when {
-            match(TokenType.NUMBER, TokenType.STRING, TokenType.CHAR, TokenType.BOOL, TokenType.NULL) ->
-                return Expr.Literal(previous().literal ?: previous().lexeme)
-
-            match(TokenType.IDENTIFIER) ->
-                return Expr.Variable(previous())
-
+        return when {
+            match(
+                TokenType.NUMBER, TokenType.STRING, TokenType.CHAR,
+                TokenType.TRUE, TokenType.FALSE, TokenType.NULL
+            ) -> {
+                Expr.Literal(previous().literal ?: previous().lexeme)
+            }
+            match(TokenType.IDENTIFIER) -> {
+                Expr.Variable(previous())
+            }
             match(TokenType.LEFT_PAR) -> {
                 val expr = expression()
-                if (!match(TokenType.RIGHT_PAR)){
+                if (!check(TokenType.RIGHT_PAR)) {
                     error(peek(), "May ')' dapat pagkatapos ng expression, trops.")
+                    throw ParseError()
                 }
-                return Expr.Grouping(expr)
-             }
+                consume(TokenType.RIGHT_PAR, "Expected ')'")
+                Expr.Grouping(expr)
+            }
+            else -> {
+                // Check specifically for stray closing parenthesis
+                if (check(TokenType.RIGHT_PAR)) {
+                    error(peek(), "Walang kapares na '(' itong ')', trops.")
+                    throw ParseError()
+                }
+                // No valid token found for an expression
+                error(peek(), "May expression dapat 'jan, lods.")
+                throw ParseError()
+            }
         }
-        error(peek(), "May expression dapat 'jan, lods.")
-        return Expr.Literal(" ")
     }
 
     class ParseError : RuntimeException()

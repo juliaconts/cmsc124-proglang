@@ -11,6 +11,7 @@ interface Expr {
 }
 
 interface Stmt {
+    data class Program(val declarations: List<Stmt>) : Stmt
     data class ExpressionStmt(val expression: Expr): Stmt
     data class VariableDecl(val name: Token, val initializer: Expr?): Stmt
     data class Block(val statements: List<Stmt>): Stmt
