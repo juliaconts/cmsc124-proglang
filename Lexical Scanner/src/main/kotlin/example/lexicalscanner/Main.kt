@@ -17,15 +17,13 @@ fun main() {
         val tokens = scanner.scanInput()
         val parser = Parser(tokens)
 
-        val program = parser.parse()
-        for (stmt in program) {
-            println(printer.printStmt(stmt))
-        }
+        val tree = parser.parse()
+        printer.printStmt(tree)
     }
 }
 //        try {
 //            parser.parse()
-//            println("Walang syntax error, pre.")
+//            println("Walang syntax error, pre.")66
 //        } catch (e: Exception) {
 //            println("Syntax error: ${e.message}")
 //        }

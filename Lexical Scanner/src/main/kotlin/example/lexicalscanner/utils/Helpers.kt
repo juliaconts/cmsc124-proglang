@@ -1,6 +1,10 @@
 package example.lexicalscanner.utils
 
 import example.lexicalscanner.syntax.Parser
+import example.lexicalscanner.utils.TokenNode
+import example.lexicalscanner.utils.Token
+import example.lexicalscanner.utils.TokenType
+
 
 // Scanner helper functions
 fun Scanner.peek(): Char = if (endOfLine()) '\u0000' else source[current] // *peeks at current character
@@ -19,16 +23,23 @@ fun Scanner.match(expected: Char): Boolean { // *used in possible multiple chara
 }
 
 // Parser helper functions
-fun Parser.peek(): Token = tokens[current]
-fun Parser.endOfLine(): Boolean = peek().type == TokenType.EOF
-fun Parser.previous(): Token = tokens[current - 1]
-fun Parser.check(type: TokenType): Boolean {
-    if (endOfLine()) return false else return peek().type == type
-}
-fun Parser.next(): Token {
+fun Parser.peek(): TokenNode =
+    TokenNode(tokens.getOrNull(current) ?: Token(TokenType.EOF, "", null, -1))
+
+fun Parser.previous(): TokenNode =
+    TokenNode(tokens.getOrNull(current - 1) ?: Token(TokenType.EOF, "", null, -1))
+
+fun Parser.endOfLine(): Boolean =
+    peek().token.type == TokenType.EOF
+
+fun Parser.check(type: TokenType): Boolean =
+    !endOfLine() && peek().token.type == type
+
+fun Parser.next(): TokenNode {
     if (!endOfLine()) current++
     return previous()
 }
+
 fun Parser.match(vararg types: TokenType): Boolean {
     for (type in types) {
         if (check(type)) {
@@ -42,16 +53,16 @@ fun error(token: Token, message: String){
     println("Awit ka pre, may syntax error ka sa '${token.lexeme}' sa  ika-${token.line} na linya: $message")
     throw Parser.ParseError()
 }
-fun Parser.consume(type: TokenType, message: String): Token {
+fun Parser.consume(type: TokenType, message: String): TokenNode {
     if (check(type)) return next()
-    error(peek(), message)
+    error(peek().token, message)
     return previous()
 }
 fun Parser.synchronize() {
     next()
     while (!endOfLine()) {
-        if (previous().type == TokenType.SEMICOLON) return
-        when (peek().type) {
+        if (previous().token.type == TokenType.SEMICOLON) return
+        when (peek().token.type) {
             TokenType.IF, TokenType.WHILE, TokenType.RETURN, TokenType.VAR, TokenType.FOR -> return
             else -> next()
         }
